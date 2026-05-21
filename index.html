@@ -205,116 +205,106 @@
 
   <style>
     /* ================================================================
-       PYTHON SOURCE DOCS — DESIGN SYSTEM v2
+       DESIGN SYSTEM — Clean & Professional
+       Inspired by: VitePress / Tailwind / Linear
        ================================================================ */
 
-    /* ---------- Design Tokens ---------- */
+    /* ── Light Theme Tokens ── */
     :root {
-      /* Brand */
-      --py-blue: #306998;
-      --py-blue-dark: #1e4060;
-      --py-blue-light: #4d8bc9;
-      --py-yellow: #FFD43B;
-      --py-yellow-dark: #e6b800;
+      /* Accent */
+      --accent:        #3b5998;
+      --accent-soft:   #eef2ff;
+      --accent-border: #c7d2fe;
+      --accent-hover:  #2d4373;
 
       /* Surface */
-      --bg-body: #ffffff;
-      --bg-sidebar: #f6f8fa;
-      --bg-card: #ffffff;
-      --bg-code: #282c34;
-      --bg-blockquote: #f0f5fa;
-      --bg-mermaid: #fafafa;
+      --bg-body:       #ffffff;
+      --bg-sidebar:    #f8fafc;
+      --bg-code:       #1e293b;
+      --bg-blockquote: #f8fafc;
+      --bg-mermaid:    #f8fafc;
+      --bg-table-even: #f8fafc;
+      --bg-table-hover:#f1f5f9;
 
       /* Text */
-      --text-primary: #1a1a2e;
-      --text-secondary: #555;
-      --text-muted: #888;
-      --text-link: var(--py-blue);
-      --text-code: var(--py-blue);
+      --text-primary:  #0f172a;
+      --text-secondary:#475569;
+      --text-muted:    #94a3b8;
+      --text-link:     var(--accent);
+      --text-code:     #334155;
 
       /* Borders */
-      --border-light: #e2e8f0;
-      --border-sidebar: #e8ecf1;
-      --border-table: #e0e0e0;
+      --border-light:   #e2e8f0;
+      --border-sidebar: #e2e8f0;
 
       /* Shadows */
-      --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
-      --shadow-md: 0 4px 12px rgba(0,0,0,.08);
-      --shadow-lg: 0 8px 24px rgba(0,0,0,.12);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.06);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,.08);
 
       /* Radii */
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
+      --radius-sm:  6px;
+      --radius-md:  8px;
+      --radius-lg: 12px;
 
-      /* Spacing */
-      --sidebar-w: 18rem;
-      --content-max: 860px;
+      /* Layout */
+      --sidebar-w:  17rem;
+      --content-max: 820px;
 
-      /* Typography */
+      /* Type */
       --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Monaco, Consolas, monospace;
-      --font-size: 16px;
-      --line-height: 1.82;
-
-      /* Theme color */
-      --theme-color: var(--py-blue);
 
       /* Docsify-themeable overrides */
-      --sidebar-width: var(--sidebar-w);
-      --sidebar-nav-link-color: var(--text-secondary);
-      --sidebar-nav-link-color--active: var(--py-blue);
-      --sidebar-nav-link-font-weight--active: 600;
-      --sidebar-nav-link-padding: .3em 1em;
+      --theme-color:                            var(--accent);
+      --sidebar-width:                          var(--sidebar-w);
+      --sidebar-nav-link-color:                 var(--text-secondary);
+      --sidebar-nav-link-color--active:         var(--accent);
+      --sidebar-nav-link-font-weight--active:   600;
+      --sidebar-nav-link-padding:              .3em 1em;
+      --content-max-width:                      var(--content-max);
+      --content-padding-top:                    1.5rem;
+      --base-font-size:                         16px;
+      --base-line-height:                       1.75;
+      --heading-color:                          var(--text-primary);
+      --text-color:                             var(--text-primary);
+      --link-color:                             var(--text-link);
+      --code-theme-background:                  var(--bg-code);
+      --code-theme-text:                        #cbd5e1;
+      --code-font-size:                         .88em;
+      --code-font-family:                       var(--font-mono);
 
-      --content-max-width: var(--content-max);
-      --content-padding-top: 1.5rem;
+      /* Cover */
+      --cover-background-color:                 linear-gradient(135deg, #1e293b 0%, #334155 40%, #475569 100%);
+      --cover-color:                            #fff;
+      --cover-button-color:                     #fff;
+      --cover-button-background:                rgba(255,255,255,.1);
+      --cover-button-border:                    1px solid rgba(255,255,255,.25);
+      --cover-button-border-radius:             8px;
+      --cover-button-padding:                   .7em 2em;
+      --cover-button-font-size:                 1rem;
+      --cover-button-primary-background:        var(--accent);
+      --cover-button-primary-color:             #fff;
+      --cover-button-primary-border:            none;
+      --cover-button-primary-font-weight:       600;
 
-      --cover-background-color: linear-gradient(135deg, #0d1b2a 0%, var(--py-blue-dark) 30%, var(--py-blue) 70%, #5a9fd4 100%);
-      --cover-color: #fff;
-      --cover-button-color: #fff;
-      --cover-button-background: rgba(255,255,255,.12);
-      --cover-button-border: 1px solid rgba(255,255,255,.35);
-      --cover-button-border-radius: 10px;
-      --cover-button-padding: .75em 2.2em;
-      --cover-button-font-size: 1rem;
-      --cover-button-primary-background: var(--py-yellow);
-      --cover-button-primary-color: #1a1a2e;
-      --cover-button-primary-border: none;
-      --cover-button-primary-font-weight: 700;
-
-      --navbar-root-color: #fff;
-      --navbar-root-background: var(--py-blue);
-      --navbar-root-border-color: transparent;
-      --navbar-menu-link-color: #333;
-
-      --base-font-size: var(--font-size);
-      --base-line-height: var(--line-height);
-
-      --heading-color: var(--text-primary);
-      --text-color: var(--text-primary);
-      --link-color: var(--text-link);
-
-      --code-theme-background: var(--bg-code);
-      --code-theme-text: #abb2bf;
-      --code-inline-background: rgba(48,105,152,.09);
-      --code-inline-color: var(--py-blue);
-      --code-font-size: .88em;
-      --code-font-family: var(--font-mono);
+      --navbar-root-color:                      #fff;
+      --navbar-root-background:                 var(--accent);
+      --navbar-root-border-color:               transparent;
+      --navbar-menu-link-color:                 #0f172a;
     }
 
-    /* ---------- Base ---------- */
+    /* ── Base ── */
     body {
       font-family: var(--font-body);
-      font-size: var(--font-size);
-      line-height: var(--line-height);
+      font-size: var(--base-font-size);
+      line-height: var(--base-line-height);
       color: var(--text-primary);
       background: var(--bg-body);
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* ---------- Content Area ---------- */
+    /* ── Content ── */
     .markdown-section {
       max-width: var(--content-max);
       margin: 0 auto;
@@ -322,422 +312,298 @@
     }
 
     .markdown-section h1 {
-      font-size: 2.15rem;
+      font-size: 2rem;
       font-weight: 800;
-      letter-spacing: -.02em;
+      letter-spacing: -.01em;
       color: var(--text-primary);
-      border-bottom: 3px solid var(--py-blue);
-      padding-bottom: .55rem;
-      margin: 2.5rem 0 1.2rem;
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: .5rem;
+      margin: 2rem 0 1rem;
     }
 
     .markdown-section h2 {
-      font-size: 1.55rem;
+      font-size: 1.4rem;
       font-weight: 700;
       color: var(--text-primary);
       border-bottom: 1px solid var(--border-light);
       padding-bottom: .35rem;
-      margin: 2.2rem 0 1rem;
+      margin: 2rem 0 .8rem;
     }
 
     .markdown-section h3 {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 700;
-      color: var(--py-blue-dark);
-      margin: 1.8rem 0 .8rem;
-      position: relative;
-    }
-
-    .markdown-section h3::before {
-      content: '';
-      display: inline-block;
-      width: 4px;
-      height: 1em;
-      background: var(--py-yellow);
-      border-radius: 2px;
-      margin-right: .5em;
-      vertical-align: -.1em;
+      color: var(--text-primary);
+      margin: 1.6rem 0 .6rem;
     }
 
     .markdown-section h4 {
-      font-size: 1.08rem;
-      font-weight: 700;
-      color: var(--py-blue);
-      margin: 1.4rem 0 .6rem;
+      font-size: 1.02rem;
+      font-weight: 650;
+      color: var(--text-secondary);
+      margin: 1.2rem 0 .5rem;
     }
 
-    .markdown-section p { margin: .8em 0; }
+    .markdown-section p { margin: .7em 0; }
 
     .markdown-section a {
       color: var(--text-link);
       text-decoration: none;
-      border-bottom: 1.5px dotted var(--py-blue-light);
-      transition: all .2s;
+      font-weight: 500;
+      transition: color .15s;
     }
-    .markdown-section a:hover {
-      color: var(--py-blue-dark);
-      border-bottom-style: solid;
-    }
+    .markdown-section a:hover { color: var(--accent-hover); text-decoration: underline; }
 
-    /* ---------- Code ---------- */
+    /* ── Code ── */
     .markdown-section pre {
       background: var(--bg-code);
       border-radius: var(--radius-md);
-      border-left: 4px solid var(--py-yellow);
-      margin: 1.3em 0;
+      margin: 1em 0;
       box-shadow: var(--shadow-sm);
-      position: relative;
+      border: 1px solid rgba(0,0,0,.08);
     }
-    .markdown-section pre::before {
-      content: attr(data-lang);
-      position: absolute;
-      top: 0;
-      right: .8em;
-      font-size: .72em;
-      font-family: var(--font-mono);
-      color: rgba(255,255,255,.3);
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      padding: .3em 0;
-      pointer-events: none;
-    }
-
     .markdown-section pre code {
-      color: var(--code-theme-text);
+      color: #cbd5e1;
       font-size: var(--code-font-size);
       font-family: var(--font-mono);
-      line-height: 1.65;
+      line-height: 1.6;
     }
-
-    .markdown-section code {
-      font-family: var(--font-mono);
-      font-size: var(--code-font-size);
-    }
-
+    .markdown-section code { font-family: var(--font-mono); font-size: var(--code-font-size); }
     .markdown-section p code,
     .markdown-section li code,
     .markdown-section td code {
-      background: var(--code-inline-background);
-      color: var(--code-inline-color);
-      padding: .12em .45em;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: .1em .45em;
       border-radius: 4px;
-      font-size: .86em;
+      font-size: .85em;
       font-weight: 500;
+      border: 1px solid var(--accent-border);
     }
 
-    /* ---------- Blockquote / Callouts ---------- */
+    /* ── Blockquote ── */
     .markdown-section blockquote {
-      border-left: 4px solid var(--py-blue);
-      background: var(--bg-blockquote);
-      padding: .9em 1.3em;
-      margin: 1.3em 0;
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      padding: .8em 1.1em;
+      margin: 1em 0;
       border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-      color: #446;
+      color: var(--text-secondary);
     }
-    .markdown-section blockquote p { margin: .25em 0; }
-    .markdown-section blockquote p:first-child { margin-top: 0; }
-    .markdown-section blockquote p:last-child { margin-bottom: 0; }
+    .markdown-section blockquote p { margin: .2em 0; }
 
-    /* ---------- Tables ---------- */
+    /* ── Tables ── */
     .markdown-section table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      margin: 1.3em 0;
-      font-size: .94em;
+      border-collapse: collapse;
+      margin: 1em 0;
+      font-size: .93em;
+      border: 1px solid var(--border-light);
       border-radius: var(--radius-sm);
       overflow: hidden;
-      box-shadow: var(--shadow-sm);
     }
-    .markdown-section table thead {
-      background: var(--py-blue);
-      color: #fff;
-    }
+    .markdown-section table thead { background: var(--accent); color: #fff; }
     .markdown-section table thead th {
-      padding: .75em 1.1em;
+      padding: .65em 1em;
       font-weight: 700;
       text-align: left;
-      font-size: .92em;
-      letter-spacing: .02em;
+      font-size: .9em;
     }
-    .markdown-section table thead th:first-child { border-radius: var(--radius-sm) 0 0 0; }
-    .markdown-section table thead th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
-    .markdown-section table tbody tr:nth-child(even) { background: #f5f8fb; }
-    .markdown-section table tbody tr:hover { background: #e8f0f8; }
-    .markdown-section table tbody td {
-      padding: .65em 1.1em;
-      border-bottom: 1px solid var(--border-table);
-    }
-    .markdown-section table tbody tr:last-child td { border-bottom: none; }
+    .markdown-section table tbody tr { border-bottom: 1px solid var(--border-light); }
+    .markdown-section table tbody tr:last-child { border-bottom: none; }
+    .markdown-section table tbody tr:nth-child(even) { background: var(--bg-table-even); }
+    .markdown-section table tbody tr:hover { background: var(--bg-table-hover); }
+    .markdown-section table tbody td { padding: .55em 1em; }
 
-    /* ---------- Mermaid ---------- */
+    /* ── Mermaid ── */
     .markdown-section .mermaid {
-      display: flex;
-      justify-content: center;
-      margin: 1.6em 0;
-      padding: 1.2em;
+      display: flex; justify-content: center;
+      margin: 1.2em 0; padding: 1em;
       background: var(--bg-mermaid);
       border-radius: var(--radius-md);
       border: 1px solid var(--border-light);
     }
 
-    /* ---------- Sidebar ---------- */
+    /* ── Sidebar ── */
     .sidebar {
       background: var(--bg-sidebar);
       border-right: 1px solid var(--border-sidebar);
     }
-    .sidebar-nav { padding: .5em 0; }
+    .sidebar-nav { padding: .3em 0; }
     .sidebar-nav > ul { padding-left: 0; }
-
     .sidebar-nav li > a {
-      transition: all .18s ease;
-      border-radius: 0 6px 6px 0;
+      transition: all .15s;
+      border-radius: 0 5px 5px 0;
       margin-right: .5em;
-      font-size: .93em;
+      font-size: .91em;
+      color: var(--text-secondary);
     }
-    .sidebar-nav li > a:hover {
-      background: rgba(48,105,152,.07);
-      color: var(--py-blue);
-    }
+    .sidebar-nav li > a:hover { background: var(--accent-soft); color: var(--accent); }
     .sidebar-nav li.active > a {
-      background: rgba(48,105,152,.1);
-      color: var(--py-blue);
+      background: var(--accent-soft);
+      color: var(--accent);
       font-weight: 650;
-      border-left: 3px solid var(--py-blue);
-      padding-left: calc(1em - 3px);
     }
-    .sidebar-nav .app-sub-sidebar li > a {
-      font-size: .88em;
-      padding-left: 2.2em;
-    }
-    .sidebar-nav .app-sub-sidebar li.active > a {
-      padding-left: calc(2.2em - 3px);
-    }
-
+    .sidebar-nav .app-sub-sidebar li > a { font-size: .86em; padding-left: 2em; }
     .sidebar-nav strong {
       display: block;
-      font-size: .78em;
-      text-transform: uppercase;
-      letter-spacing: .08em;
+      font-size: .76em;
+      letter-spacing: .06em;
       color: var(--text-muted);
-      padding: .8em 1.2em .3em;
+      padding: .7em 1.2em .2em;
       font-weight: 700;
     }
+    .sidebar > .app-name-link { font-size: 1.1rem; font-weight: 750; color: var(--text-primary); }
 
-    /* Name / Brand */
-    .sidebar > .app-name-link {
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: -.02em;
-    }
-
-    /* ---------- Navbar ---------- */
-    .app-nav { margin: 18px 60px 0 0; }
+    /* ── Navbar ── */
+    .app-nav { margin: 14px 60px 0 0; }
     .app-nav a {
       color: #fff !important;
-      font-size: .93em;
-      padding: .35em .85em;
+      font-size: .9em;
+      padding: .3em .8em;
       border-radius: 6px;
-      transition: all .2s;
+      transition: background .15s;
       font-weight: 500;
     }
-    .app-nav a:hover { background: rgba(255,255,255,.15); }
+    .app-nav a:hover { background: rgba(255,255,255,.12); }
     .app-nav li ul {
       background: #fff;
       border-radius: var(--radius-sm);
       box-shadow: var(--shadow-lg);
       border: 1px solid var(--border-light);
     }
-    .app-nav li ul a { color: #333 !important; }
+    .app-nav li ul a { color: var(--text-primary) !important; }
 
-    /* ---------- Theme Toggle Button ---------- */
+    /* ── Theme Toggle Button ── */
     .theme-toggle-li { margin-left: .3em; }
     .theme-toggle-btn {
-      background: none;
-      border: none;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
       cursor: pointer;
-      padding: .35em .65em;
+      padding: .3em .55em;
       border-radius: 6px;
       color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background .2s;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
     }
-    .theme-toggle-btn:hover { background: rgba(255,255,255,.15); }
-
-    .theme-icon {
-      transition: transform .5s cubic-bezier(.4,0,.2,1), opacity .35s ease;
-      position: absolute;
-    }
+    .theme-toggle-btn:hover { background: rgba(255,255,255,.18); }
+    .theme-icon { transition: transform .4s cubic-bezier(.4,0,.2,1), opacity .3s; position: relative; }
     .sun-icon, .moon-icon { position: relative; }
     .sun-icon { opacity: 1; transform: rotate(0) scale(1); }
     .moon-icon { opacity: 0; transform: rotate(-90deg) scale(.6); position: absolute; }
     .theme-toggle-btn.dark .sun-icon { opacity: 0; transform: rotate(90deg) scale(.6); }
     .theme-toggle-btn.dark .moon-icon { opacity: 1; transform: rotate(0) scale(1); }
 
-    /* ---------- Cover Page ---------- */
-    section.cover {
-      background: var(--cover-background-color) !important;
-      position: relative;
-      overflow: hidden;
-    }
-    section.cover::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 80% 20%, rgba(255,212,59,.12) 0%, transparent 50%),
-                  radial-gradient(ellipse at 20% 80%, rgba(77,139,201,.15) 0%, transparent 50%);
-      pointer-events: none;
-    }
-    section.cover .cover-main {
-      margin-top: 10vh;
-      position: relative;
-      z-index: 1;
-    }
+    /* ── Cover ── */
+    section.cover { background: var(--cover-background-color) !important; }
+    section.cover .cover-main { margin-top: 10vh; }
     section.cover .cover-main > p:first-child {
-      font-size: 3.6rem;
+      font-size: 3.2rem;
       font-weight: 900;
-      letter-spacing: -.02em;
-      text-shadow: 0 2px 12px rgba(0,0,0,.25);
-      margin-bottom: .25em;
-      background: linear-gradient(180deg, #fff 30%, rgba(255,212,59,.9));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      letter-spacing: -.01em;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,.15);
+      margin-bottom: .2em;
     }
     section.cover .cover-main > p:last-child {
-      display: flex;
-      gap: .8em;
-      justify-content: center;
-      flex-wrap: wrap;
+      display: flex; gap: .7em; justify-content: center; flex-wrap: wrap;
     }
     section.cover .cover-main > p:last-child a {
-      transition: all .3s cubic-bezier(.4,0,.2,1);
-      border-radius: 10px;
+      transition: all .25s; border-radius: 8px;
     }
     section.cover .cover-main > p:last-child a:first-child {
-      background: var(--py-yellow);
-      color: #1a1a2e;
+      background: #fff;
+      color: var(--accent);
       font-weight: 700;
     }
     section.cover .cover-main > p:last-child a:first-child:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(255,212,59,.45);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(255,255,255,.25);
     }
     section.cover .cover-main > p:last-child a:last-child:hover {
-      background: rgba(255,255,255,.22);
-      transform: translateY(-3px);
+      background: rgba(255,255,255,.18);
     }
     section.cover blockquote {
-      border-left-color: var(--py-yellow);
-      background: rgba(255,255,255,.1);
-      color: rgba(255,255,255,.9);
-      max-width: 620px;
-      margin: 1em auto;
-      font-size: 1.12em;
-      backdrop-filter: blur(4px);
+      border-left: 3px solid rgba(255,255,255,.4);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.85);
+      max-width: 600px;
+      margin: .8em auto;
+      font-size: 1.05em;
     }
     section.cover .cover-main ul {
-      list-style: none;
-      padding: 0;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: .5em;
-      margin: 1.5em 0;
-      font-size: .95em;
+      list-style: none; padding: 0;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: .4em;
+      margin: 1.2em 0; font-size: .92em;
     }
     section.cover .cover-main ul li {
       background: rgba(255,255,255,.1);
-      backdrop-filter: blur(4px);
-      padding: .4em 1em;
-      border-radius: 20px;
+      padding: .35em .9em; border-radius: 20px;
       color: rgba(255,255,255,.9);
     }
 
-    /* ---------- Search ---------- */
+    /* ── Search ── */
     .search .results-panel { max-height: 70vh; }
-    .search .matching-post { border-bottom: 1px solid var(--border-light); padding: .55em 0; }
-    .search .matching-post .h2 { color: var(--py-blue); font-weight: 600; }
+    .search .matching-post { border-bottom: 1px solid var(--border-light); padding: .5em 0; }
+    .search .matching-post .h2 { color: var(--accent); font-weight: 600; }
 
-    /* ---------- Pagination ---------- */
+    /* ── Pagination ── */
     .docsify-pagination-container {
       border-top: 1px solid var(--border-light);
-      padding-top: 1.8rem;
-      margin-top: 3.5rem;
+      padding-top: 1.5rem; margin-top: 3rem;
     }
-    .pagination-item-label { color: var(--text-muted); font-size: .82em; }
-    .pagination-item-title { color: var(--py-blue); font-weight: 700; }
+    .pagination-item-label { color: var(--text-muted); font-size: .8em; }
+    .pagination-item-title { color: var(--accent); font-weight: 650; }
 
-    /* ---------- GitHub Corner ---------- */
-    .github-corner svg { fill: var(--py-blue); color: #fff; }
+    /* ── GitHub Corner ── */
+    .github-corner svg { fill: var(--accent); color: #fff; }
 
-    /* ---------- Copy Code Button ---------- */
+    /* ── Copy Code Button ── */
     .docsify-copy-code-button {
-      font-size: .76em !important;
-      border-radius: 5px !important;
-      border: 1px solid rgba(255,255,255,.12) !important;
-      background: rgba(255,255,255,.06) !important;
-      color: rgba(255,255,255,.55) !important;
-      transition: all .2s !important;
-      top: .5em !important;
-      right: .5em !important;
+      font-size: .75em !important;
+      border-radius: 4px !important;
+      border: 1px solid rgba(255,255,255,.1) !important;
+      background: rgba(255,255,255,.05) !important;
+      color: rgba(255,255,255,.45) !important;
+      transition: all .15s !important;
+      top: .4em !important; right: .4em !important;
     }
     .docsify-copy-code-button:hover {
-      background: rgba(255,255,255,.14) !important;
+      background: rgba(255,255,255,.12) !important;
       color: #fff !important;
     }
 
-    /* ---------- Progress Bar ---------- */
-    .progress { background: var(--py-yellow) !important; height: 2.5px !important; }
+    /* ── Progress Bar ── */
+    .progress { background: var(--accent) !important; height: 2px !important; }
 
-    /* ---------- Scrollbar ---------- */
-    .sidebar::-webkit-scrollbar { width: 5px; }
+    /* ── Scrollbar ── */
+    .sidebar::-webkit-scrollbar { width: 4px; }
     .sidebar::-webkit-scrollbar-track { background: transparent; }
-    .sidebar::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 10px; }
-    .sidebar::-webkit-scrollbar-thumb:hover { background: #b0b5bd; }
+    .sidebar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+    .sidebar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-    /* ---------- Back to Top ---------- */
+    /* ── Back to Top ── */
     #back-to-top {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: var(--py-blue);
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      box-shadow: var(--shadow-md);
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all .3s cubic-bezier(.4,0,.2,1);
-      z-index: 100;
-      pointer-events: none;
+      position: fixed; bottom: 2rem; right: 2rem;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--accent); color: #fff; border: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; box-shadow: var(--shadow-md);
+      opacity: 0; transform: translateY(8px);
+      transition: all .25s; z-index: 100; pointer-events: none;
     }
     #back-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    #back-to-top:hover { background: var(--py-blue-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    #back-to-top:hover { background: var(--accent-hover); transform: translateY(-2px); }
 
-    /* ---------- Smooth Page Transitions ---------- */
-    .markdown-section {
-      animation: fadeSlideIn .35s ease-out;
-    }
-    @keyframes fadeSlideIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    /* ── Page Transition ── */
+    .markdown-section { animation: fadeIn .25s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ---------- Responsive ---------- */
+    /* ── Responsive ── */
     @media screen and (max-width: 768px) {
       .markdown-section { padding: 1rem 1.2rem 2rem; }
-      .markdown-section h1 { font-size: 1.6rem; }
-      section.cover .cover-main > p:first-child { font-size: 2rem; }
+      .markdown-section h1 { font-size: 1.5rem; }
+      section.cover .cover-main > p:first-child { font-size: 1.8rem; }
       .app-nav { margin: 8px 40px 0 0; }
       #back-to-top { bottom: 1rem; right: 1rem; width: 36px; height: 36px; }
     }
@@ -746,93 +612,90 @@
        DARK THEME
        ================================================================ */
     [data-theme="dark"] {
-      --bg-body: #0d1117;
-      --bg-sidebar: #131820;
-      --bg-card: #161b22;
-      --bg-blockquote: #1a2332;
-      --bg-mermaid: #161b24;
-      --text-primary: #e6edf3;
-      --text-secondary: #8b949e;
-      --text-muted: #6e7681;
-      --text-link: #58a6ff;
-      --border-light: #21262d;
-      --border-sidebar: #21262d;
-      --border-table: #21262d;
+      --accent:        #818cf8;
+      --accent-soft:   #1e1b4b;
+      --accent-border: #3730a3;
+      --accent-hover:  #a5b4fc;
+
+      --bg-body:       #0c0a1e;
+      --bg-sidebar:    #111827;
+      --bg-code:       #1e293b;
+      --bg-blockquote: #111827;
+      --bg-mermaid:    #1e293b;
+      --bg-table-even: #111827;
+      --bg-table-hover:#1e293b;
+
+      --text-primary:  #e2e8f0;
+      --text-secondary:#94a3b8;
+      --text-muted:    #64748b;
+      --text-link:     var(--accent);
+      --text-code:     #cbd5e1;
+
+      --border-light:  #1e293b;
+      --border-sidebar:#1e293b;
+
       --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
       --shadow-md: 0 4px 12px rgba(0,0,0,.4);
-      --shadow-lg: 0 8px 24px rgba(0,0,0,.5);
-      --code-inline-background: rgba(88,166,255,.1);
-      --code-inline-color: #79c0ff;
-      --theme-color: #58a6ff;
+      --shadow-lg: 0 10px 25px rgba(0,0,0,.5);
+
+      --theme-color:              var(--accent);
+      --code-theme-text:          #cbd5e1;
+      --navbar-root-background:   #111827;
+      --cover-background-color:   linear-gradient(135deg, #0c0a1e 0%, #111827 50%, #1e293b 100%);
     }
 
-    [data-theme="dark"] .sidebar-nav li.active > a {
-      background: rgba(88,166,255,.12);
-      color: #58a6ff;
-    }
-    [data-theme="dark"] .sidebar-nav li > a:hover {
-      background: rgba(88,166,255,.06);
-      color: #58a6ff;
-    }
-    [data-theme="dark"] .markdown-section blockquote {
-      background: var(--bg-blockquote);
-      color: #c9d1d9;
-    }
-    [data-theme="dark"] .markdown-section table thead { background: #1e4060; }
-    [data-theme="dark"] .markdown-section table tbody tr:nth-child(even) { background: #161b22; }
-    [data-theme="dark"] .markdown-section table tbody tr:hover { background: #1a2332; }
-    [data-theme="dark"] .markdown-section .mermaid {
-      background: var(--bg-mermaid);
-      border-color: var(--border-light);
-    }
+    [data-theme="dark"] .sidebar-nav li.active > a,
+    [data-theme="dark"] .sidebar-nav li > a:hover { background: rgba(129,140,248,.12); }
+    [data-theme="dark"] .markdown-section h1 { border-bottom-color: var(--border-light); }
     [data-theme="dark"] .markdown-section h2 { border-bottom-color: var(--border-light); }
-    [data-theme="dark"] .markdown-section h3 { color: #79c0ff; }
-    [data-theme="dark"] .markdown-section h3::before { background: #58a6ff; }
-    [data-theme="dark"] .docsify-pagination-container { border-top-color: var(--border-light); }
-    [data-theme="dark"] .progress { background: #58a6ff !important; }
-    [data-theme="dark"] .sidebar::-webkit-scrollbar-thumb { background: #30363d; }
-    [data-theme="dark"] .sidebar::-webkit-scrollbar-thumb:hover { background: #484f58; }
-    [data-theme="dark"] .markdown-section h1 { border-bottom-color: #58a6ff; }
-    [data-theme="dark"] .markdown-section pre { border-left-color: #58a6ff; }
-    [data-theme="dark"] .search .matching-post { border-bottom-color: #21262d; }
-    [data-theme="dark"] .github-corner svg { fill: #1a2332; }
+    [data-theme="dark"] .markdown-section pre { border-color: rgba(255,255,255,.05); }
+    [data-theme="dark"] .markdown-section p code,
+    [data-theme="dark"] .markdown-section li code,
+    [data-theme="dark"] .markdown-section td code { background: rgba(129,140,248,.12); border-color: rgba(129,140,248,.2); }
+    [data-theme="dark"] .github-corner svg { fill: #111827; }
+    [data-theme="dark"] .sidebar::-webkit-scrollbar-thumb { background: #334155; }
+    [data-theme="dark"] .sidebar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    [data-theme="dark"] .progress { background: var(--accent) !important; }
 
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
-        --bg-body: #0d1117;
-        --bg-sidebar: #131820;
-        --bg-blockquote: #1a2332;
-        --bg-mermaid: #161b24;
-        --text-primary: #e6edf3;
-        --text-secondary: #8b949e;
-        --text-muted: #6e7681;
-        --text-link: #58a6ff;
-        --border-light: #21262d;
-        --border-sidebar: #21262d;
-        --border-table: #21262d;
-        --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
-        --shadow-md: 0 4px 12px rgba(0,0,0,.4);
-        --code-inline-background: rgba(88,166,255,.1);
-        --code-inline-color: #79c0ff;
-        --theme-color: #58a6ff;
+        --accent:        #818cf8;
+        --accent-soft:   #1e1b4b;
+        --accent-border: #3730a3;
+        --accent-hover:  #a5b4fc;
+        --bg-body:       #0c0a1e;
+        --bg-sidebar:    #111827;
+        --bg-blockquote: #111827;
+        --bg-mermaid:    #1e293b;
+        --bg-table-even: #111827;
+        --bg-table-hover:#1e293b;
+        --text-primary:  #e2e8f0;
+        --text-secondary:#94a3b8;
+        --text-muted:    #64748b;
+        --text-link:     var(--accent);
+        --border-light:  #1e293b;
+        --border-sidebar:#1e293b;
+        --theme-color:   var(--accent);
+        --navbar-root-background: #111827;
       }
-      :root:not([data-theme="light"]) .sidebar-nav li.active > a { background: rgba(88,166,255,.12); color: #58a6ff; }
-      :root:not([data-theme="light"]) .sidebar-nav li > a:hover { background: rgba(88,166,255,.06); color: #58a6ff; }
-      :root:not([data-theme="light"]) .markdown-section blockquote { background: #1a2332; color: #c9d1d9; }
-      :root:not([data-theme="light"]) .markdown-section table thead { background: #1e4060; }
-      :root:not([data-theme="light"]) .markdown-section table tbody tr:nth-child(even) { background: #161b22; }
-      :root:not([data-theme="light"]) .markdown-section table tbody tr:hover { background: #1a2332; }
-      :root:not([data-theme="light"]) .markdown-section .mermaid { background: #161b24; border-color: #21262d; }
-      :root:not([data-theme="light"]) .markdown-section h2 { border-bottom-color: #21262d; }
-      :root:not([data-theme="light"]) .markdown-section h3 { color: #79c0ff; }
-      :root:not([data-theme="light"]) .markdown-section h1 { border-bottom-color: #58a6ff; }
-      :root:not([data-theme="light"]) .markdown-section pre { border-left-color: #58a6ff; }
-      :root:not([data-theme="light"]) .docsify-pagination-container { border-top-color: #21262d; }
-      :root:not([data-theme="light"]) .progress { background: #58a6ff !important; }
-      :root:not([data-theme="light"]) .sidebar { background: #131820; border-right-color: #21262d; }
-      :root:not([data-theme="light"]) .sidebar-nav li > a { color: #c9d1d9; }
-      :root:not([data-theme="light"]) .sidebar::-webkit-scrollbar-thumb { background: #30363d; }
-      :root:not([data-theme="light"]) .github-corner svg { fill: #1a2332; }
+      :root:not([data-theme="light"]) .sidebar { background: #111827; border-right-color: #1e293b; }
+      :root:not([data-theme="light"]) .sidebar-nav li > a { color: #94a3b8; }
+      :root:not([data-theme="light"]) .sidebar-nav li.active > a,
+      :root:not([data-theme="light"]) .sidebar-nav li > a:hover { background: rgba(129,140,248,.12); color: #818cf8; }
+      :root:not([data-theme="light"]) .markdown-section blockquote { background: #111827; color: #94a3b8; }
+      :root:not([data-theme="light"]) .markdown-section table thead { background: #3730a3; }
+      :root:not([data-theme="light"]) .markdown-section table tbody tr { border-color: #1e293b; }
+      :root:not([data-theme="light"]) .markdown-section table tbody tr:nth-child(even) { background: #111827; }
+      :root:not([data-theme="light"]) .markdown-section table tbody tr:hover { background: #1e293b; }
+      :root:not([data-theme="light"]) .markdown-section .mermaid { background: #1e293b; border-color: #1e293b; }
+      :root:not([data-theme="light"]) .markdown-section h1,
+      :root:not([data-theme="light"]) .markdown-section h2 { border-bottom-color: #1e293b; }
+      :root:not([data-theme="light"]) .markdown-section pre { border-color: rgba(255,255,255,.05); }
+      :root:not([data-theme="light"]) .markdown-section p code,
+      :root:not([data-theme="light"]) .markdown-section li code,
+      :root:not([data-theme="light"]) .markdown-section td code { background: rgba(129,140,248,.12); border-color: rgba(129,140,248,.2); }
+      :root:not([data-theme="light"]) .docsify-pagination-container { border-top-color: #1e293b; }
+      :root:not([data-theme="light"]) .github-corner svg { fill: #111827; }
     }
   </style>
   <!-- 返回顶部 -->
