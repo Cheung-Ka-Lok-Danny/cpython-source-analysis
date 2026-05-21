@@ -104,6 +104,7 @@
 </head>
 <body>
   <div id="app"></div>
+  <button id="back-to-top" title="返回顶部" aria-label="返回顶部">↑</button>
 
   <!-- Docsify 核心 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
@@ -148,44 +149,35 @@
       var DARK_KEY = 'cpython-docs-theme';
       var html = document.documentElement;
 
-      // 恢复保存的主题
       var saved = localStorage.getItem(DARK_KEY);
-      if (saved === 'dark') {
-        html.setAttribute('data-theme', 'dark');
-      } else if (saved === 'light') {
-        html.setAttribute('data-theme', 'light');
-      }
+      if (saved === 'dark') html.setAttribute('data-theme', 'dark');
+      else if (saved === 'light') html.setAttribute('data-theme', 'light');
 
-      // 等待 DOM 加载后插入切换按钮
       function insertToggle() {
         var nav = document.querySelector('.app-nav');
         if (!nav) { setTimeout(insertToggle, 200); return; }
 
         var li = document.createElement('li');
-        var btn = document.createElement('a');
-        btn.href = 'javascript:void(0)';
-        btn.style.cursor = 'pointer';
+        li.className = 'theme-toggle-li';
+        var btn = document.createElement('button');
+        btn.className = 'theme-toggle-btn';
+        btn.setAttribute('aria-label', '切换暗色/亮色主题');
         btn.title = '切换暗色/亮色主题';
+        btn.innerHTML = '<svg class="theme-icon sun-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><svg class="theme-icon moon-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 
         function updateIcon() {
           var isDark = html.getAttribute('data-theme') === 'dark';
-          btn.innerHTML = isDark ? '☀️ 亮色' : '🌙 暗色';
+          btn.classList.toggle('dark', isDark);
         }
 
         btn.onclick = function() {
           var current = html.getAttribute('data-theme');
-          if (current === 'dark') {
-            html.setAttribute('data-theme', 'light');
-            localStorage.setItem(DARK_KEY, 'light');
-          } else {
-            html.setAttribute('data-theme', 'dark');
-            localStorage.setItem(DARK_KEY, 'dark');
-          }
+          var next = current === 'dark' ? 'light' : 'dark';
+          html.setAttribute('data-theme', next);
+          localStorage.setItem(DARK_KEY, next);
           updateIcon();
-          // 刷新 Mermaid 图表主题
           if (window.mermaid) {
-            var isDark = html.getAttribute('data-theme') === 'dark';
-            mermaid.initialize({ theme: isDark ? 'dark' : 'default' });
+            mermaid.initialize({ theme: next === 'dark' ? 'dark' : 'default' });
             mermaid.init(undefined, document.querySelectorAll('.mermaid'));
           }
         };
@@ -201,152 +193,224 @@
         insertToggle();
       }
 
-      // 监听系统主题变化
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
         if (!localStorage.getItem(DARK_KEY)) {
           html.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+          var btn = document.querySelector('.theme-toggle-btn');
+          if (btn) btn.classList.toggle('dark', e.matches);
         }
       });
     })();
   </script>
 
   <style>
-    /* ========== CSS 变量定义 ========== */
+    /* ================================================================
+       PYTHON SOURCE DOCS — DESIGN SYSTEM v2
+       ================================================================ */
+
+    /* ---------- Design Tokens ---------- */
     :root {
-      /* Python 品牌色 */
-      --python-blue: #306998;
-      --python-dark-blue: #1e4060;
-      --python-yellow: #FFD43B;
-      --python-dark-yellow: #e6b800;
+      /* Brand */
+      --py-blue: #306998;
+      --py-blue-dark: #1e4060;
+      --py-blue-light: #4d8bc9;
+      --py-yellow: #FFD43B;
+      --py-yellow-dark: #e6b800;
 
-      /* 主题色 */
-      --theme-color: var(--python-blue);
-      --theme-color-light: #4d8bc9;
-      --theme-color-dark: var(--python-dark-blue);
+      /* Surface */
+      --bg-body: #ffffff;
+      --bg-sidebar: #f6f8fa;
+      --bg-card: #ffffff;
+      --bg-code: #282c34;
+      --bg-blockquote: #f0f5fa;
+      --bg-mermaid: #fafafa;
 
-      /* 侧边栏 */
-      --sidebar-width: 18rem;
-      --sidebar-nav-link-color: #444;
-      --sidebar-nav-link-color--active: var(--python-blue);
+      /* Text */
+      --text-primary: #1a1a2e;
+      --text-secondary: #555;
+      --text-muted: #888;
+      --text-link: var(--py-blue);
+      --text-code: var(--py-blue);
+
+      /* Borders */
+      --border-light: #e2e8f0;
+      --border-sidebar: #e8ecf1;
+      --border-table: #e0e0e0;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,.12);
+
+      /* Radii */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+
+      /* Spacing */
+      --sidebar-w: 18rem;
+      --content-max: 860px;
+
+      /* Typography */
+      --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Menlo, Monaco, Consolas, monospace;
+      --font-size: 16px;
+      --line-height: 1.82;
+
+      /* Theme color */
+      --theme-color: var(--py-blue);
+
+      /* Docsify-themeable overrides */
+      --sidebar-width: var(--sidebar-w);
+      --sidebar-nav-link-color: var(--text-secondary);
+      --sidebar-nav-link-color--active: var(--py-blue);
       --sidebar-nav-link-font-weight--active: 600;
-      --sidebar-nav-link-text-decoration--active: none;
-      --sidebar-nav-link-padding: 0.25em 1em;
+      --sidebar-nav-link-padding: .3em 1em;
 
-      /* 内容区 */
-      --content-max-width: 900px;
+      --content-max-width: var(--content-max);
       --content-padding-top: 1.5rem;
 
-      /* 排版 */
-      --base-font-size: 16px;
-      --base-line-height: 1.8;
-      --heading-color: #222;
-      --text-color: #333;
-      --link-color: var(--python-blue);
-
-      /* 代码块 */
-      --code-theme-background: #282c34;
-      --code-theme-text: #abb2bf;
-      --code-inline-background: rgba(48, 105, 152, 0.08);
-      --code-inline-color: #306998;
-      --code-font-size: 0.9em;
-      --code-font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-
-      /* 封面 */
-      --cover-background-color: linear-gradient(135deg, var(--python-dark-blue) 0%, var(--python-blue) 50%, #4d8bc9 100%);
+      --cover-background-color: linear-gradient(135deg, #0d1b2a 0%, var(--py-blue-dark) 30%, var(--py-blue) 70%, #5a9fd4 100%);
       --cover-color: #fff;
       --cover-button-color: #fff;
-      --cover-button-background: rgba(255, 255, 255, 0.15);
-      --cover-button-border: 1px solid rgba(255, 255, 255, 0.4);
-      --cover-button-border-radius: 8px;
-      --cover-button-padding: 0.75em 2em;
+      --cover-button-background: rgba(255,255,255,.12);
+      --cover-button-border: 1px solid rgba(255,255,255,.35);
+      --cover-button-border-radius: 10px;
+      --cover-button-padding: .75em 2.2em;
       --cover-button-font-size: 1rem;
-      --cover-button-primary-background: var(--python-yellow);
-      --cover-button-primary-color: #222;
-      --cover-button-primary-border: 1px solid var(--python-yellow);
-      --cover-button-primary-font-weight: 600;
+      --cover-button-primary-background: var(--py-yellow);
+      --cover-button-primary-color: #1a1a2e;
+      --cover-button-primary-border: none;
+      --cover-button-primary-font-weight: 700;
 
-      /* 导航栏 */
       --navbar-root-color: #fff;
-      --navbar-root-background: var(--python-blue);
+      --navbar-root-background: var(--py-blue);
       --navbar-root-border-color: transparent;
       --navbar-menu-link-color: #333;
+
+      --base-font-size: var(--font-size);
+      --base-line-height: var(--line-height);
+
+      --heading-color: var(--text-primary);
+      --text-color: var(--text-primary);
+      --link-color: var(--text-link);
+
+      --code-theme-background: var(--bg-code);
+      --code-theme-text: #abb2bf;
+      --code-inline-background: rgba(48,105,152,.09);
+      --code-inline-color: var(--py-blue);
+      --code-font-size: .88em;
+      --code-font-family: var(--font-mono);
     }
 
-    /* ========== 全局排版 ========== */
+    /* ---------- Base ---------- */
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
-                   "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-size: var(--base-font-size);
-      line-height: var(--base-line-height);
-      color: var(--text-color);
+      font-family: var(--font-body);
+      font-size: var(--font-size);
+      line-height: var(--line-height);
+      color: var(--text-primary);
+      background: var(--bg-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* ========== 内容区 ========== */
+    /* ---------- Content Area ---------- */
     .markdown-section {
-      max-width: var(--content-max-width);
+      max-width: var(--content-max);
       margin: 0 auto;
-      padding: 1rem 2rem 3rem;
+      padding: 1.5rem 2.5rem 4rem;
     }
 
     .markdown-section h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--heading-color);
-      border-bottom: 3px solid var(--python-blue);
-      padding-bottom: 0.5rem;
-      margin-top: 2rem;
+      font-size: 2.15rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      color: var(--text-primary);
+      border-bottom: 3px solid var(--py-blue);
+      padding-bottom: .55rem;
+      margin: 2.5rem 0 1.2rem;
     }
 
     .markdown-section h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--heading-color);
-      border-bottom: 1px solid #e0e0e0;
-      padding-bottom: 0.3rem;
-      margin-top: 1.8rem;
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: .35rem;
+      margin: 2.2rem 0 1rem;
     }
 
     .markdown-section h3 {
       font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--python-dark-blue);
-      margin-top: 1.5rem;
+      font-weight: 700;
+      color: var(--py-blue-dark);
+      margin: 1.8rem 0 .8rem;
+      position: relative;
+    }
+
+    .markdown-section h3::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 1em;
+      background: var(--py-yellow);
+      border-radius: 2px;
+      margin-right: .5em;
+      vertical-align: -.1em;
     }
 
     .markdown-section h4 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--python-blue);
-      margin-top: 1.2rem;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--py-blue);
+      margin: 1.4rem 0 .6rem;
     }
+
+    .markdown-section p { margin: .8em 0; }
 
     .markdown-section a {
-      color: var(--link-color);
+      color: var(--text-link);
       text-decoration: none;
-      border-bottom: 1px dotted var(--python-blue);
-      transition: all 0.2s ease;
+      border-bottom: 1.5px dotted var(--py-blue-light);
+      transition: all .2s;
     }
-
     .markdown-section a:hover {
-      color: var(--python-dark-blue);
+      color: var(--py-blue-dark);
       border-bottom-style: solid;
     }
 
-    /* ========== 代码块 ========== */
+    /* ---------- Code ---------- */
     .markdown-section pre {
-      background: var(--code-theme-background);
-      border-radius: 8px;
-      border-left: 4px solid var(--python-yellow);
-      margin: 1.2em 0;
+      background: var(--bg-code);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--py-yellow);
+      margin: 1.3em 0;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+    .markdown-section pre::before {
+      content: attr(data-lang);
+      position: absolute;
+      top: 0;
+      right: .8em;
+      font-size: .72em;
+      font-family: var(--font-mono);
+      color: rgba(255,255,255,.3);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: .3em 0;
+      pointer-events: none;
     }
 
     .markdown-section pre code {
       color: var(--code-theme-text);
       font-size: var(--code-font-size);
+      font-family: var(--font-mono);
+      line-height: 1.65;
     }
 
     .markdown-section code {
-      font-family: var(--code-font-family);
+      font-family: var(--font-mono);
       font-size: var(--code-font-size);
     }
 
@@ -355,371 +419,441 @@
     .markdown-section td code {
       background: var(--code-inline-background);
       color: var(--code-inline-color);
-      padding: 0.15em 0.4em;
-      border-radius: 3px;
-      font-size: 0.88em;
+      padding: .12em .45em;
+      border-radius: 4px;
+      font-size: .86em;
+      font-weight: 500;
     }
 
-    /* ========== 引用块 ========== */
+    /* ---------- Blockquote / Callouts ---------- */
     .markdown-section blockquote {
-      border-left: 4px solid var(--python-blue);
-      background: #f0f5fa;
-      padding: 0.8em 1.2em;
-      margin: 1.2em 0;
-      border-radius: 0 6px 6px 0;
+      border-left: 4px solid var(--py-blue);
+      background: var(--bg-blockquote);
+      padding: .9em 1.3em;
+      margin: 1.3em 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
       color: #446;
     }
+    .markdown-section blockquote p { margin: .25em 0; }
+    .markdown-section blockquote p:first-child { margin-top: 0; }
+    .markdown-section blockquote p:last-child { margin-bottom: 0; }
 
-    .markdown-section blockquote p {
-      margin: 0.3em 0;
-    }
-
-    .markdown-section blockquote.tip {
-      border-left-color: #42b983;
-      background: #f0faf5;
-    }
-
-    .markdown-section blockquote.warning {
-      border-left-color: var(--python-yellow);
-      background: #fffdf0;
-    }
-
-    /* ========== 表格 ========== */
+    /* ---------- Tables ---------- */
     .markdown-section table {
       width: 100%;
-      border-collapse: collapse;
-      margin: 1.2em 0;
-      font-size: 0.95em;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 1.3em 0;
+      font-size: .94em;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
-
     .markdown-section table thead {
-      background: var(--python-blue);
+      background: var(--py-blue);
       color: #fff;
     }
-
     .markdown-section table thead th {
-      padding: 0.7em 1em;
-      font-weight: 600;
+      padding: .75em 1.1em;
+      font-weight: 700;
       text-align: left;
+      font-size: .92em;
+      letter-spacing: .02em;
     }
-
-    .markdown-section table tbody tr:nth-child(even) {
-      background: #f5f8fb;
-    }
-
-    .markdown-section table tbody tr:hover {
-      background: #e8f0f8;
-    }
-
+    .markdown-section table thead th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+    .markdown-section table thead th:last-child  { border-radius: 0 var(--radius-sm) 0 0; }
+    .markdown-section table tbody tr:nth-child(even) { background: #f5f8fb; }
+    .markdown-section table tbody tr:hover { background: #e8f0f8; }
     .markdown-section table tbody td {
-      padding: 0.6em 1em;
-      border-bottom: 1px solid #e0e0e0;
+      padding: .65em 1.1em;
+      border-bottom: 1px solid var(--border-table);
     }
+    .markdown-section table tbody tr:last-child td { border-bottom: none; }
 
-    /* ========== Mermaid 图表 ========== */
+    /* ---------- Mermaid ---------- */
     .markdown-section .mermaid {
       display: flex;
       justify-content: center;
-      margin: 1.5em 0;
-      padding: 1em;
-      background: #fafafa;
-      border-radius: 8px;
-      border: 1px solid #e0e0e0;
+      margin: 1.6em 0;
+      padding: 1.2em;
+      background: var(--bg-mermaid);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
     }
 
-    /* ========== 侧边栏优化 ========== */
+    /* ---------- Sidebar ---------- */
     .sidebar {
-      background: #fafbfc;
-      border-right: 1px solid #e8e8e8;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-sidebar);
     }
+    .sidebar-nav { padding: .5em 0; }
+    .sidebar-nav > ul { padding-left: 0; }
 
     .sidebar-nav li > a {
-      transition: all 0.15s ease;
-      border-radius: 0 4px 4px 0;
+      transition: all .18s ease;
+      border-radius: 0 6px 6px 0;
+      margin-right: .5em;
+      font-size: .93em;
     }
-
     .sidebar-nav li > a:hover {
-      background: rgba(48, 105, 152, 0.08);
-      color: var(--python-blue);
+      background: rgba(48,105,152,.07);
+      color: var(--py-blue);
     }
-
     .sidebar-nav li.active > a {
-      background: rgba(48, 105, 152, 0.1);
-      color: var(--python-blue);
-      font-weight: 600;
+      background: rgba(48,105,152,.1);
+      color: var(--py-blue);
+      font-weight: 650;
+      border-left: 3px solid var(--py-blue);
+      padding-left: calc(1em - 3px);
     }
-
     .sidebar-nav .app-sub-sidebar li > a {
-      font-size: 0.9em;
-      padding-left: 2em;
+      font-size: .88em;
+      padding-left: 2.2em;
+    }
+    .sidebar-nav .app-sub-sidebar li.active > a {
+      padding-left: calc(2.2em - 3px);
     }
 
-    /* ========== 导航栏美化 ========== */
-    .app-nav {
-      margin: 20px 60px 0 0;
+    .sidebar-nav strong {
+      display: block;
+      font-size: .78em;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      padding: .8em 1.2em .3em;
+      font-weight: 700;
     }
 
+    /* Name / Brand */
+    .sidebar > .app-name-link {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+
+    /* ---------- Navbar ---------- */
+    .app-nav { margin: 18px 60px 0 0; }
     .app-nav a {
       color: #fff !important;
-      font-size: 0.95em;
-      padding: 0.3em 0.8em;
-      border-radius: 4px;
-      transition: background 0.2s;
+      font-size: .93em;
+      padding: .35em .85em;
+      border-radius: 6px;
+      transition: all .2s;
+      font-weight: 500;
     }
-
-    .app-nav a:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
-
+    .app-nav a:hover { background: rgba(255,255,255,.15); }
     .app-nav li ul {
       background: #fff;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-light);
+    }
+    .app-nav li ul a { color: #333 !important; }
+
+    /* ---------- Theme Toggle Button ---------- */
+    .theme-toggle-li { margin-left: .3em; }
+    .theme-toggle-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: .35em .65em;
       border-radius: 6px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
     }
+    .theme-toggle-btn:hover { background: rgba(255,255,255,.15); }
 
-    .app-nav li ul a {
-      color: #333 !important;
+    .theme-icon {
+      transition: transform .5s cubic-bezier(.4,0,.2,1), opacity .35s ease;
+      position: absolute;
     }
+    .sun-icon, .moon-icon { position: relative; }
+    .sun-icon { opacity: 1; transform: rotate(0) scale(1); }
+    .moon-icon { opacity: 0; transform: rotate(-90deg) scale(.6); position: absolute; }
+    .theme-toggle-btn.dark .sun-icon { opacity: 0; transform: rotate(90deg) scale(.6); }
+    .theme-toggle-btn.dark .moon-icon { opacity: 1; transform: rotate(0) scale(1); }
 
-    /* ========== 封面页增强 ========== */
+    /* ---------- Cover Page ---------- */
     section.cover {
       background: var(--cover-background-color) !important;
+      position: relative;
+      overflow: hidden;
     }
-
+    section.cover::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 80% 20%, rgba(255,212,59,.12) 0%, transparent 50%),
+                  radial-gradient(ellipse at 20% 80%, rgba(77,139,201,.15) 0%, transparent 50%);
+      pointer-events: none;
+    }
     section.cover .cover-main {
       margin-top: 10vh;
+      position: relative;
+      z-index: 1;
     }
-
     section.cover .cover-main > p:first-child {
-      font-size: 3.5rem;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      margin-bottom: 0.3em;
+      font-size: 3.6rem;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      text-shadow: 0 2px 12px rgba(0,0,0,.25);
+      margin-bottom: .25em;
+      background: linear-gradient(180deg, #fff 30%, rgba(255,212,59,.9));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-
+    section.cover .cover-main > p:last-child {
+      display: flex;
+      gap: .8em;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
     section.cover .cover-main > p:last-child a {
-      transition: all 0.3s ease;
+      transition: all .3s cubic-bezier(.4,0,.2,1);
+      border-radius: 10px;
     }
-
     section.cover .cover-main > p:last-child a:first-child {
-      background: var(--cover-button-primary-background);
-      color: var(--cover-button-primary-color);
-      border: var(--cover-button-primary-border);
-      font-weight: var(--cover-button-primary-font-weight);
+      background: var(--py-yellow);
+      color: #1a1a2e;
+      font-weight: 700;
     }
-
     section.cover .cover-main > p:last-child a:first-child:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(255, 212, 59, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(255,212,59,.45);
     }
-
     section.cover .cover-main > p:last-child a:last-child:hover {
-      background: rgba(255, 255, 255, 0.25);
-      transform: translateY(-2px);
+      background: rgba(255,255,255,.22);
+      transform: translateY(-3px);
     }
-
     section.cover blockquote {
-      border-left-color: var(--python-yellow);
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      max-width: 600px;
+      border-left-color: var(--py-yellow);
+      background: rgba(255,255,255,.1);
+      color: rgba(255,255,255,.9);
+      max-width: 620px;
       margin: 1em auto;
-      font-size: 1.1em;
+      font-size: 1.12em;
+      backdrop-filter: blur(4px);
+    }
+    section.cover .cover-main ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .5em;
+      margin: 1.5em 0;
+      font-size: .95em;
+    }
+    section.cover .cover-main ul li {
+      background: rgba(255,255,255,.1);
+      backdrop-filter: blur(4px);
+      padding: .4em 1em;
+      border-radius: 20px;
+      color: rgba(255,255,255,.9);
     }
 
-    /* ========== 搜索结果 ========== */
-    .search .results-panel {
-      max-height: 70vh;
-    }
+    /* ---------- Search ---------- */
+    .search .results-panel { max-height: 70vh; }
+    .search .matching-post { border-bottom: 1px solid var(--border-light); padding: .55em 0; }
+    .search .matching-post .h2 { color: var(--py-blue); font-weight: 600; }
 
-    .search .matching-post {
-      border-bottom: 1px solid #eee;
-      padding: 0.5em 0;
-    }
-
-    .search .matching-post .h2 {
-      color: var(--python-blue);
-    }
-
-    /* ========== 分页导航 ========== */
+    /* ---------- Pagination ---------- */
     .docsify-pagination-container {
-      border-top: 1px solid #e0e0e0;
-      padding-top: 1.5rem;
-      margin-top: 3rem;
+      border-top: 1px solid var(--border-light);
+      padding-top: 1.8rem;
+      margin-top: 3.5rem;
+    }
+    .pagination-item-label { color: var(--text-muted); font-size: .82em; }
+    .pagination-item-title { color: var(--py-blue); font-weight: 700; }
+
+    /* ---------- GitHub Corner ---------- */
+    .github-corner svg { fill: var(--py-blue); color: #fff; }
+
+    /* ---------- Copy Code Button ---------- */
+    .docsify-copy-code-button {
+      font-size: .76em !important;
+      border-radius: 5px !important;
+      border: 1px solid rgba(255,255,255,.12) !important;
+      background: rgba(255,255,255,.06) !important;
+      color: rgba(255,255,255,.55) !important;
+      transition: all .2s !important;
+      top: .5em !important;
+      right: .5em !important;
+    }
+    .docsify-copy-code-button:hover {
+      background: rgba(255,255,255,.14) !important;
+      color: #fff !important;
     }
 
-    .pagination-item-label {
-      color: #888;
-      font-size: 0.85em;
-    }
+    /* ---------- Progress Bar ---------- */
+    .progress { background: var(--py-yellow) !important; height: 2.5px !important; }
 
-    .pagination-item-title {
-      color: var(--python-blue);
-      font-weight: 600;
-    }
+    /* ---------- Scrollbar ---------- */
+    .sidebar::-webkit-scrollbar { width: 5px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 10px; }
+    .sidebar::-webkit-scrollbar-thumb:hover { background: #b0b5bd; }
 
-    /* ========== GitHub Corner ========== */
-    .github-corner svg {
-      fill: var(--python-blue);
+    /* ---------- Back to Top ---------- */
+    #back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--py-blue);
       color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .3s cubic-bezier(.4,0,.2,1);
+      z-index: 100;
+      pointer-events: none;
+    }
+    #back-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    #back-to-top:hover { background: var(--py-blue-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+    /* ---------- Smooth Page Transitions ---------- */
+    .markdown-section {
+      animation: fadeSlideIn .35s ease-out;
+    }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ========== 响应式 ========== */
+    /* ---------- Responsive ---------- */
     @media screen and (max-width: 768px) {
-      .markdown-section {
-        padding: 1rem 1rem 2rem;
-      }
-
-      section.cover .cover-main > p:first-child {
-        font-size: 2rem;
-      }
-
-      .app-nav {
-        margin: 10px 45px 0 0;
-      }
+      .markdown-section { padding: 1rem 1.2rem 2rem; }
+      .markdown-section h1 { font-size: 1.6rem; }
+      section.cover .cover-main > p:first-child { font-size: 2rem; }
+      .app-nav { margin: 8px 40px 0 0; }
+      #back-to-top { bottom: 1rem; right: 1rem; width: 36px; height: 36px; }
     }
 
-    /* ========== 暗色主题覆盖 ========== */
-    /* 手动切换暗色模式 */
+    /* ================================================================
+       DARK THEME
+       ================================================================ */
     [data-theme="dark"] {
-      --text-color: #c9d1d9;
-      --heading-color: #e6edf3;
-      --link-color: #58a6ff;
-    }
-
-    [data-theme="dark"] .sidebar {
-      background: #1a1a2e;
-      border-right-color: #2a2a3e;
-    }
-
-    [data-theme="dark"] .sidebar-nav li > a {
-      color: #c9d1d9;
+      --bg-body: #0d1117;
+      --bg-sidebar: #131820;
+      --bg-card: #161b22;
+      --bg-blockquote: #1a2332;
+      --bg-mermaid: #161b24;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --text-link: #58a6ff;
+      --border-light: #21262d;
+      --border-sidebar: #21262d;
+      --border-table: #21262d;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.4);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,.5);
+      --code-inline-background: rgba(88,166,255,.1);
+      --code-inline-color: #79c0ff;
+      --theme-color: #58a6ff;
     }
 
     [data-theme="dark"] .sidebar-nav li.active > a {
-      background: rgba(48, 105, 152, 0.2);
+      background: rgba(88,166,255,.12);
+      color: #58a6ff;
     }
-
+    [data-theme="dark"] .sidebar-nav li > a:hover {
+      background: rgba(88,166,255,.06);
+      color: #58a6ff;
+    }
     [data-theme="dark"] .markdown-section blockquote {
-      background: #1e2a3a;
+      background: var(--bg-blockquote);
       color: #c9d1d9;
     }
-
-    [data-theme="dark"] .markdown-section table thead {
-      background: #1e4060;
-    }
-
-    [data-theme="dark"] .markdown-section table tbody tr:nth-child(even) {
-      background: #1a1a2e;
-    }
-
-    [data-theme="dark"] .markdown-section table tbody tr:hover {
-      background: #1e2a3a;
-    }
-
+    [data-theme="dark"] .markdown-section table thead { background: #1e4060; }
+    [data-theme="dark"] .markdown-section table tbody tr:nth-child(even) { background: #161b22; }
+    [data-theme="dark"] .markdown-section table tbody tr:hover { background: #1a2332; }
     [data-theme="dark"] .markdown-section .mermaid {
-      background: #1e1e2e;
-      border-color: #2a2a3e;
+      background: var(--bg-mermaid);
+      border-color: var(--border-light);
     }
+    [data-theme="dark"] .markdown-section h2 { border-bottom-color: var(--border-light); }
+    [data-theme="dark"] .markdown-section h3 { color: #79c0ff; }
+    [data-theme="dark"] .markdown-section h3::before { background: #58a6ff; }
+    [data-theme="dark"] .docsify-pagination-container { border-top-color: var(--border-light); }
+    [data-theme="dark"] .progress { background: #58a6ff !important; }
+    [data-theme="dark"] .sidebar::-webkit-scrollbar-thumb { background: #30363d; }
+    [data-theme="dark"] .sidebar::-webkit-scrollbar-thumb:hover { background: #484f58; }
+    [data-theme="dark"] .markdown-section h1 { border-bottom-color: #58a6ff; }
+    [data-theme="dark"] .markdown-section pre { border-left-color: #58a6ff; }
+    [data-theme="dark"] .search .matching-post { border-bottom-color: #21262d; }
+    [data-theme="dark"] .github-corner svg { fill: #1a2332; }
 
-    [data-theme="dark"] .markdown-section h2 {
-      border-bottom-color: #2a2a3e;
-    }
-
-    [data-theme="dark"] .docsify-pagination-container {
-      border-top-color: #2a2a3e;
-    }
-
-    /* 自动检测暗色模式（无手动设置时） */
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
-        --text-color: #c9d1d9;
-        --heading-color: #e6edf3;
-        --link-color: #58a6ff;
+        --bg-body: #0d1117;
+        --bg-sidebar: #131820;
+        --bg-blockquote: #1a2332;
+        --bg-mermaid: #161b24;
+        --text-primary: #e6edf3;
+        --text-secondary: #8b949e;
+        --text-muted: #6e7681;
+        --text-link: #58a6ff;
+        --border-light: #21262d;
+        --border-sidebar: #21262d;
+        --border-table: #21262d;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+        --shadow-md: 0 4px 12px rgba(0,0,0,.4);
+        --code-inline-background: rgba(88,166,255,.1);
+        --code-inline-color: #79c0ff;
+        --theme-color: #58a6ff;
       }
-
-      :root:not([data-theme="light"]) .sidebar {
-        background: #1a1a2e;
-        border-right-color: #2a2a3e;
-      }
-
-      :root:not([data-theme="light"]) .sidebar-nav li > a {
-        color: #c9d1d9;
-      }
-
-      :root:not([data-theme="light"]) .sidebar-nav li.active > a {
-        background: rgba(48, 105, 152, 0.2);
-      }
-
-      :root:not([data-theme="light"]) .markdown-section blockquote {
-        background: #1e2a3a;
-        color: #c9d1d9;
-      }
-
-      :root:not([data-theme="light"]) .markdown-section table thead {
-        background: #1e4060;
-      }
-
-      :root:not([data-theme="light"]) .markdown-section table tbody tr:nth-child(even) {
-        background: #1a1a2e;
-      }
-
-      :root:not([data-theme="light"]) .markdown-section table tbody tr:hover {
-        background: #1e2a3a;
-      }
-
-      :root:not([data-theme="light"]) .markdown-section .mermaid {
-        background: #1e1e2e;
-        border-color: #2a2a3e;
-      }
-
-      :root:not([data-theme="light"]) .markdown-section h2 {
-        border-bottom-color: #2a2a3e;
-      }
-
-      :root:not([data-theme="light"]) .docsify-pagination-container {
-        border-top-color: #2a2a3e;
-      }
-    }
-
-    /* ========== 代码复制按钮美化 ========== */
-    .docsify-copy-code-button {
-      font-size: 0.8em !important;
-      border-radius: 4px !important;
-      border: 1px solid rgba(255,255,255,0.15) !important;
-      background: rgba(255,255,255,0.08) !important;
-      color: rgba(255,255,255,0.7) !important;
-      transition: all 0.2s !important;
-    }
-
-    .docsify-copy-code-button:hover {
-      background: rgba(255,255,255,0.15) !important;
-      color: #fff !important;
-    }
-
-    /* ========== 进度条 ========== */
-    .progress {
-      background: var(--python-yellow) !important;
-    }
-
-    /* ========== 滚动条 ========== */
-    .sidebar::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .sidebar::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb {
-      background: #ccc;
-      border-radius: 4px;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb:hover {
-      background: #aaa;
+      :root:not([data-theme="light"]) .sidebar-nav li.active > a { background: rgba(88,166,255,.12); color: #58a6ff; }
+      :root:not([data-theme="light"]) .sidebar-nav li > a:hover { background: rgba(88,166,255,.06); color: #58a6ff; }
+      :root:not([data-theme="light"]) .markdown-section blockquote { background: #1a2332; color: #c9d1d9; }
+      :root:not([data-theme="light"]) .markdown-section table thead { background: #1e4060; }
+      :root:not([data-theme="light"]) .markdown-section table tbody tr:nth-child(even) { background: #161b22; }
+      :root:not([data-theme="light"]) .markdown-section table tbody tr:hover { background: #1a2332; }
+      :root:not([data-theme="light"]) .markdown-section .mermaid { background: #161b24; border-color: #21262d; }
+      :root:not([data-theme="light"]) .markdown-section h2 { border-bottom-color: #21262d; }
+      :root:not([data-theme="light"]) .markdown-section h3 { color: #79c0ff; }
+      :root:not([data-theme="light"]) .markdown-section h1 { border-bottom-color: #58a6ff; }
+      :root:not([data-theme="light"]) .markdown-section pre { border-left-color: #58a6ff; }
+      :root:not([data-theme="light"]) .docsify-pagination-container { border-top-color: #21262d; }
+      :root:not([data-theme="light"]) .progress { background: #58a6ff !important; }
+      :root:not([data-theme="light"]) .sidebar { background: #131820; border-right-color: #21262d; }
+      :root:not([data-theme="light"]) .sidebar-nav li > a { color: #c9d1d9; }
+      :root:not([data-theme="light"]) .sidebar::-webkit-scrollbar-thumb { background: #30363d; }
+      :root:not([data-theme="light"]) .github-corner svg { fill: #1a2332; }
     }
   </style>
+  <!-- 返回顶部 -->
+  <script>
+    (function() {
+      var btn = document.getElementById('back-to-top');
+      if (!btn) return;
+      var ticking = false;
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          requestAnimationFrame(function() {
+            btn.classList.toggle('visible', window.scrollY > 400);
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+      btn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    })();
+  </script>
 </body>
 </html>
