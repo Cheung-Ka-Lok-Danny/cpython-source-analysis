@@ -15,5 +15,5 @@
 - 💡 基于CPython 3.12.x，追踪最新源码演进
 - 📖 5大部分18章，7,500+行深度内容
 
-[GitHub](https://github.com/datawhalechina/cpython-source-analysis)
+[GitHub](https://github.com/Cheung-Ka-Lok-Danny/cpython-source-analysis)
 [开始阅读](/README.md)
