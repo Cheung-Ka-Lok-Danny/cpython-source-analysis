@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="description" content="Python源码解析——深度剖析CPython">
+  <title>Python源码解析 · 深度剖析CPython</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>">
+
+  <!-- Docsify 主题 CSS -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+
+  <!-- Mermaid 支持 -->
+  <script>
+    window.$docsify = {
+      name: "Python源码解析",
+      nameLink: "/",
+      repo: "https://github.com/datawhalechina/cpython-source-analysis",
+      loadSidebar: true,
+      loadNavbar: true,
+      coverpage: true,
+      maxLevel: 4,
+      subMaxLevel: 3,
+      auto2top: true,
+      search: {
+        placeholder: "搜索文档...",
+        noData: "没有找到结果",
+        depth: 4,
+        paths: 'auto',
+        hideOtherSidebarContent: false,
+        namespace: 'cpython-docs'
+      },
+      copyCode: {
+        buttonText: "复制",
+        errorText: "复制失败",
+        successText: "已复制"
+      },
+      pagination: {
+        previousText: "上一节",
+        nextText: "下一节",
+        crossChapter: true
+      },
+      tabs: {
+        persist: true,
+        sync: true,
+        theme: 'classic'
+      },
+      count: {
+        countable: true,
+        fontsize: '0.9em',
+        color: 'rgb(90, 90, 90)',
+        language: 'chinese'
+      },
+      progress: {
+        minimum: 0.1
+      },
+      corner: {
+        url: "https://github.com/datawhalechina/cpython-source-analysis",
+        icon: "github"
+      },
+      // Mermaid 配置
+      markdown: {
+        renderer: {
+          code: function(code, lang) {
+            if (lang === 'mermaid') {
+              return '<div class="mermaid">' + code + '</div>';
+            }
+            return this.origin.code.apply(this, arguments);
+          }
+        }
+      },
+      plugins: [
+        function(hook) {
+          // Mermaid 初始化
+          var mermaidLoaded = false;
+          hook.doneEach(function() {
+            if (!mermaidLoaded) {
+              var script = document.createElement('script');
+              script.src = '//cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+              script.onload = function() {
+                mermaid.initialize({
+                  startOnLoad: true,
+                  theme: (document.documentElement.getAttribute('data-theme') === 'dark' ||
+                          window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'default',
+                  securityLevel: 'loose',
+                  flowchart: { useMaxWidth: true, htmlLabels: true },
+                  sequence: { useMaxWidth: true },
+                  gantt: { useMaxWidth: true }
+                });
+                mermaidLoaded = true;
+              };
+              document.body.appendChild(script);
+            } else {
+              var isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+                           window.matchMedia('(prefers-color-scheme: dark)').matches;
+              mermaid.initialize({ theme: isDark ? 'dark' : 'default' });
+              mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+          });
+        }
+      ]
+    };
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- Docsify 核心 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+
+  <!-- 搜索插件 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+
+  <!-- 代码复制 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
+
+  <!-- 分页导航 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
+
+  <!-- 字数统计 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-count@latest/dist/countable.min.js"></script>
+
+  <!-- 标签页 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-tabs@1/dist/docsify-tabs.min.js"></script>
+
+  <!-- Progress Bar -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-progress@1/dist/progress.min.js"></script>
+
+  <!-- 图片缩放 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
+
+  <!-- emoji -->
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
+
+  <!-- 外部脚本 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/external-script.min.js"></script>
+
+  <!-- 侧边栏折叠 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+
+  <!-- KaTeX 数学公式 -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css">
+  <script src="//cdn.jsdelivr.net/npm/docsify-katex@0/dist/docsify-katex.min.js"></script>
+
+  <!-- 主题切换脚本 -->
+  <script>
+    (function() {
+      var DARK_KEY = 'cpython-docs-theme';
+      var html = document.documentElement;
+
+      // 恢复保存的主题
+      var saved = localStorage.getItem(DARK_KEY);
+      if (saved === 'dark') {
+        html.setAttribute('data-theme', 'dark');
+      } else if (saved === 'light') {
+        html.setAttribute('data-theme', 'light');
+      }
+
+      // 等待 DOM 加载后插入切换按钮
+      function insertToggle() {
+        var nav = document.querySelector('.app-nav');
+        if (!nav) { setTimeout(insertToggle, 200); return; }
+
+        var li = document.createElement('li');
+        var btn = document.createElement('a');
+        btn.href = 'javascript:void(0)';
+        btn.style.cursor = 'pointer';
+        btn.title = '切换暗色/亮色主题';
+
+        function updateIcon() {
+          var isDark = html.getAttribute('data-theme') === 'dark';
+          btn.innerHTML = isDark ? '☀️ 亮色' : '🌙 暗色';
+        }
+
+        btn.onclick = function() {
+          var current = html.getAttribute('data-theme');
+          if (current === 'dark') {
+            html.setAttribute('data-theme', 'light');
+            localStorage.setItem(DARK_KEY, 'light');
+          } else {
+            html.setAttribute('data-theme', 'dark');
+            localStorage.setItem(DARK_KEY, 'dark');
+          }
+          updateIcon();
+          // 刷新 Mermaid 图表主题
+          if (window.mermaid) {
+            var isDark = html.getAttribute('data-theme') === 'dark';
+            mermaid.initialize({ theme: isDark ? 'dark' : 'default' });
+            mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+          }
+        };
+
+        updateIcon();
+        li.appendChild(btn);
+        nav.appendChild(li);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', insertToggle);
+      } else {
+        insertToggle();
+      }
+
+      // 监听系统主题变化
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem(DARK_KEY)) {
+          html.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        }
+      });
+    })();
+  </script>
+
+  <style>
+    /* ========== CSS 变量定义 ========== */
+    :root {
+      /* Python 品牌色 */
+      --python-blue: #306998;
+      --python-dark-blue: #1e4060;
+      --python-yellow: #FFD43B;
+      --python-dark-yellow: #e6b800;
+
+      /* 主题色 */
+      --theme-color: var(--python-blue);
+      --theme-color-light: #4d8bc9;
+      --theme-color-dark: var(--python-dark-blue);
+
+      /* 侧边栏 */
+      --sidebar-width: 18rem;
+      --sidebar-nav-link-color: #444;
+      --sidebar-nav-link-color--active: var(--python-blue);
+      --sidebar-nav-link-font-weight--active: 600;
+      --sidebar-nav-link-text-decoration--active: none;
+      --sidebar-nav-link-padding: 0.25em 1em;
+
+      /* 内容区 */
+      --content-max-width: 900px;
+      --content-padding-top: 1.5rem;
+
+      /* 排版 */
+      --base-font-size: 16px;
+      --base-line-height: 1.8;
+      --heading-color: #222;
+      --text-color: #333;
+      --link-color: var(--python-blue);
+
+      /* 代码块 */
+      --code-theme-background: #282c34;
+      --code-theme-text: #abb2bf;
+      --code-inline-background: rgba(48, 105, 152, 0.08);
+      --code-inline-color: #306998;
+      --code-font-size: 0.9em;
+      --code-font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+
+      /* 封面 */
+      --cover-background-color: linear-gradient(135deg, var(--python-dark-blue) 0%, var(--python-blue) 50%, #4d8bc9 100%);
+      --cover-color: #fff;
+      --cover-button-color: #fff;
+      --cover-button-background: rgba(255, 255, 255, 0.15);
+      --cover-button-border: 1px solid rgba(255, 255, 255, 0.4);
+      --cover-button-border-radius: 8px;
+      --cover-button-padding: 0.75em 2em;
+      --cover-button-font-size: 1rem;
+      --cover-button-primary-background: var(--python-yellow);
+      --cover-button-primary-color: #222;
+      --cover-button-primary-border: 1px solid var(--python-yellow);
+      --cover-button-primary-font-weight: 600;
+
+      /* 导航栏 */
+      --navbar-root-color: #fff;
+      --navbar-root-background: var(--python-blue);
+      --navbar-root-border-color: transparent;
+      --navbar-menu-link-color: #333;
+    }
+
+    /* ========== 全局排版 ========== */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+                   "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: var(--base-font-size);
+      line-height: var(--base-line-height);
+      color: var(--text-color);
+    }
+
+    /* ========== 内容区 ========== */
+    .markdown-section {
+      max-width: var(--content-max-width);
+      margin: 0 auto;
+      padding: 1rem 2rem 3rem;
+    }
+
+    .markdown-section h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--heading-color);
+      border-bottom: 3px solid var(--python-blue);
+      padding-bottom: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .markdown-section h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--heading-color);
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 0.3rem;
+      margin-top: 1.8rem;
+    }
+
+    .markdown-section h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--python-dark-blue);
+      margin-top: 1.5rem;
+    }
+
+    .markdown-section h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--python-blue);
+      margin-top: 1.2rem;
+    }
+
+    .markdown-section a {
+      color: var(--link-color);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--python-blue);
+      transition: all 0.2s ease;
+    }
+
+    .markdown-section a:hover {
+      color: var(--python-dark-blue);
+      border-bottom-style: solid;
+    }
+
+    /* ========== 代码块 ========== */
+    .markdown-section pre {
+      background: var(--code-theme-background);
+      border-radius: 8px;
+      border-left: 4px solid var(--python-yellow);
+      margin: 1.2em 0;
+    }
+
+    .markdown-section pre code {
+      color: var(--code-theme-text);
+      font-size: var(--code-font-size);
+    }
+
+    .markdown-section code {
+      font-family: var(--code-font-family);
+      font-size: var(--code-font-size);
+    }
+
+    .markdown-section p code,
+    .markdown-section li code,
+    .markdown-section td code {
+      background: var(--code-inline-background);
+      color: var(--code-inline-color);
+      padding: 0.15em 0.4em;
+      border-radius: 3px;
+      font-size: 0.88em;
+    }
+
+    /* ========== 引用块 ========== */
+    .markdown-section blockquote {
+      border-left: 4px solid var(--python-blue);
+      background: #f0f5fa;
+      padding: 0.8em 1.2em;
+      margin: 1.2em 0;
+      border-radius: 0 6px 6px 0;
+      color: #446;
+    }
+
+    .markdown-section blockquote p {
+      margin: 0.3em 0;
+    }
+
+    .markdown-section blockquote.tip {
+      border-left-color: #42b983;
+      background: #f0faf5;
+    }
+
+    .markdown-section blockquote.warning {
+      border-left-color: var(--python-yellow);
+      background: #fffdf0;
+    }
+
+    /* ========== 表格 ========== */
+    .markdown-section table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2em 0;
+      font-size: 0.95em;
+    }
+
+    .markdown-section table thead {
+      background: var(--python-blue);
+      color: #fff;
+    }
+
+    .markdown-section table thead th {
+      padding: 0.7em 1em;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .markdown-section table tbody tr:nth-child(even) {
+      background: #f5f8fb;
+    }
+
+    .markdown-section table tbody tr:hover {
+      background: #e8f0f8;
+    }
+
+    .markdown-section table tbody td {
+      padding: 0.6em 1em;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    /* ========== Mermaid 图表 ========== */
+    .markdown-section .mermaid {
+      display: flex;
+      justify-content: center;
+      margin: 1.5em 0;
+      padding: 1em;
+      background: #fafafa;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    /* ========== 侧边栏优化 ========== */
+    .sidebar {
+      background: #fafbfc;
+      border-right: 1px solid #e8e8e8;
+    }
+
+    .sidebar-nav li > a {
+      transition: all 0.15s ease;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .sidebar-nav li > a:hover {
+      background: rgba(48, 105, 152, 0.08);
+      color: var(--python-blue);
+    }
+
+    .sidebar-nav li.active > a {
+      background: rgba(48, 105, 152, 0.1);
+      color: var(--python-blue);
+      font-weight: 600;
+    }
+
+    .sidebar-nav .app-sub-sidebar li > a {
+      font-size: 0.9em;
+      padding-left: 2em;
+    }
+
+    /* ========== 导航栏美化 ========== */
+    .app-nav {
+      margin: 20px 60px 0 0;
+    }
+
+    .app-nav a {
+      color: #fff !important;
+      font-size: 0.95em;
+      padding: 0.3em 0.8em;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .app-nav a:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .app-nav li ul {
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+
+    .app-nav li ul a {
+      color: #333 !important;
+    }
+
+    /* ========== 封面页增强 ========== */
+    section.cover {
+      background: var(--cover-background-color) !important;
+    }
+
+    section.cover .cover-main {
+      margin-top: 10vh;
+    }
+
+    section.cover .cover-main > p:first-child {
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      margin-bottom: 0.3em;
+    }
+
+    section.cover .cover-main > p:last-child a {
+      transition: all 0.3s ease;
+    }
+
+    section.cover .cover-main > p:last-child a:first-child {
+      background: var(--cover-button-primary-background);
+      color: var(--cover-button-primary-color);
+      border: var(--cover-button-primary-border);
+      font-weight: var(--cover-button-primary-font-weight);
+    }
+
+    section.cover .cover-main > p:last-child a:first-child:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 212, 59, 0.4);
+    }
+
+    section.cover .cover-main > p:last-child a:last-child:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    section.cover blockquote {
+      border-left-color: var(--python-yellow);
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      max-width: 600px;
+      margin: 1em auto;
+      font-size: 1.1em;
+    }
+
+    /* ========== 搜索结果 ========== */
+    .search .results-panel {
+      max-height: 70vh;
+    }
+
+    .search .matching-post {
+      border-bottom: 1px solid #eee;
+      padding: 0.5em 0;
+    }
+
+    .search .matching-post .h2 {
+      color: var(--python-blue);
+    }
+
+    /* ========== 分页导航 ========== */
+    .docsify-pagination-container {
+      border-top: 1px solid #e0e0e0;
+      padding-top: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .pagination-item-label {
+      color: #888;
+      font-size: 0.85em;
+    }
+
+    .pagination-item-title {
+      color: var(--python-blue);
+      font-weight: 600;
+    }
+
+    /* ========== GitHub Corner ========== */
+    .github-corner svg {
+      fill: var(--python-blue);
+      color: #fff;
+    }
+
+    /* ========== 响应式 ========== */
+    @media screen and (max-width: 768px) {
+      .markdown-section {
+        padding: 1rem 1rem 2rem;
+      }
+
+      section.cover .cover-main > p:first-child {
+        font-size: 2rem;
+      }
+
+      .app-nav {
+        margin: 10px 45px 0 0;
+      }
+    }
+
+    /* ========== 暗色主题覆盖 ========== */
+    /* 手动切换暗色模式 */
+    [data-theme="dark"] {
+      --text-color: #c9d1d9;
+      --heading-color: #e6edf3;
+      --link-color: #58a6ff;
+    }
+
+    [data-theme="dark"] .sidebar {
+      background: #1a1a2e;
+      border-right-color: #2a2a3e;
+    }
+
+    [data-theme="dark"] .sidebar-nav li > a {
+      color: #c9d1d9;
+    }
+
+    [data-theme="dark"] .sidebar-nav li.active > a {
+      background: rgba(48, 105, 152, 0.2);
+    }
+
+    [data-theme="dark"] .markdown-section blockquote {
+      background: #1e2a3a;
+      color: #c9d1d9;
+    }
+
+    [data-theme="dark"] .markdown-section table thead {
+      background: #1e4060;
+    }
+
+    [data-theme="dark"] .markdown-section table tbody tr:nth-child(even) {
+      background: #1a1a2e;
+    }
+
+    [data-theme="dark"] .markdown-section table tbody tr:hover {
+      background: #1e2a3a;
+    }
+
+    [data-theme="dark"] .markdown-section .mermaid {
+      background: #1e1e2e;
+      border-color: #2a2a3e;
+    }
+
+    [data-theme="dark"] .markdown-section h2 {
+      border-bottom-color: #2a2a3e;
+    }
+
+    [data-theme="dark"] .docsify-pagination-container {
+      border-top-color: #2a2a3e;
+    }
+
+    /* 自动检测暗色模式（无手动设置时） */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --text-color: #c9d1d9;
+        --heading-color: #e6edf3;
+        --link-color: #58a6ff;
+      }
+
+      :root:not([data-theme="light"]) .sidebar {
+        background: #1a1a2e;
+        border-right-color: #2a2a3e;
+      }
+
+      :root:not([data-theme="light"]) .sidebar-nav li > a {
+        color: #c9d1d9;
+      }
+
+      :root:not([data-theme="light"]) .sidebar-nav li.active > a {
+        background: rgba(48, 105, 152, 0.2);
+      }
+
+      :root:not([data-theme="light"]) .markdown-section blockquote {
+        background: #1e2a3a;
+        color: #c9d1d9;
+      }
+
+      :root:not([data-theme="light"]) .markdown-section table thead {
+        background: #1e4060;
+      }
+
+      :root:not([data-theme="light"]) .markdown-section table tbody tr:nth-child(even) {
+        background: #1a1a2e;
+      }
+
+      :root:not([data-theme="light"]) .markdown-section table tbody tr:hover {
+        background: #1e2a3a;
+      }
+
+      :root:not([data-theme="light"]) .markdown-section .mermaid {
+        background: #1e1e2e;
+        border-color: #2a2a3e;
+      }
+
+      :root:not([data-theme="light"]) .markdown-section h2 {
+        border-bottom-color: #2a2a3e;
+      }
+
+      :root:not([data-theme="light"]) .docsify-pagination-container {
+        border-top-color: #2a2a3e;
+      }
+    }
+
+    /* ========== 代码复制按钮美化 ========== */
+    .docsify-copy-code-button {
+      font-size: 0.8em !important;
+      border-radius: 4px !important;
+      border: 1px solid rgba(255,255,255,0.15) !important;
+      background: rgba(255,255,255,0.08) !important;
+      color: rgba(255,255,255,0.7) !important;
+      transition: all 0.2s !important;
+    }
+
+    .docsify-copy-code-button:hover {
+      background: rgba(255,255,255,0.15) !important;
+      color: #fff !important;
+    }
+
+    /* ========== 进度条 ========== */
+    .progress {
+      background: var(--python-yellow) !important;
+    }
+
+    /* ========== 滚动条 ========== */
+    .sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 4px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: #aaa;
+    }
+  </style>
+</body>
+</html>
